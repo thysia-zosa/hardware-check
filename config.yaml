@@ -1,8 +1,8 @@
 # Configuration File for Hardware-Check
 
-# max CPU-temperature in ° Celsius
-maxCpuTemp: 90.0
-# minutes between two checks
+# max CPU-temperature in ° Celsius, must be a floating point number
+maxCpuTemp: 80.0
+# minutes between two checks, must be an integer
 checkInterval: 10
 # whom to warn
 telegramAddress: 'M122'

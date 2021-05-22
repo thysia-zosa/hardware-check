@@ -29,11 +29,11 @@ if os.path.isfile(CONFIG_FILE):
         telegramAddress = config[TELEGRAM_ADDRESS]
 
 # In case something went wrong, assign default values
-if maxCpuTemp == None:
-    maxCpuTemp = 90.0
-if checkInterval == None:
+if maxCpuTemp == None or isinstance(maxCpuTemp, float) != True:
+    maxCpuTemp = 80.0
+if checkInterval == None or isinstance(checkInterval, int) != True:
     checkInterval = 10
-if telegramAddress == None:
+if telegramAddress == None or isinstance(telegramAddress, str) != True:
     telegramAddress = 'M122'
 
 # install / update cronjob
