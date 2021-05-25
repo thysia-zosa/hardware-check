@@ -13,7 +13,10 @@ MAX_CPU_TEMP = 'maxCpuTemp'
 CHECK_INTERVAL = 'checkInterval'
 TELEGRAM_ADDRESS = 'telegramAddress'
 
-# start log entry with time, prepare error list
+# initialize main variables
+maxCpuTemp = None
+checkInterval = None
+telegramAddress = None
 log = [datetime.now()]
 errors = []
 
