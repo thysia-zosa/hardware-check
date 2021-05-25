@@ -1,4 +1,5 @@
 import requests
+import yaml
 
 def get_emoji(emojiName):
     emoji = ""
@@ -16,9 +17,8 @@ def get_emoji(emojiName):
 
 def telegram_bot_sendtext(bot_message):
     
-    bot_token = '1842158365:AAGWo3CqoVYYTBRN7uETQ8axicrgSF4ipFU'
     bot_chatID = '-559789286'
-    send_text = 'https://api.telegram.org/bot' + bot_token + '/sendMessage?chat_id=' + bot_chatID + '&parse_mode=Markdown&text=' + bot_message
+    send_text = telegramApiUrl + telegramToken + '/sendMessage?chat_id=' + bot_chatID + '&parse_mode=Markdown&text=' + bot_message
 
     response = requests.get(send_text)
 
