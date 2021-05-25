@@ -8,7 +8,9 @@ import os.path
 import requests
 import yaml
 from pyspectator.processor import Cpu
+from crontab import CronTab
 
+# constants
 CONFIG_FILE = 'config.yaml'
 MAX_CPU_TEMP = 'maxCpuTemp'
 CHECK_INTERVAL = 'checkInterval'
@@ -49,8 +51,11 @@ if telegramChatID == None or isinstance(telegramChatID, str) != True:
 if telegramToken == None or isinstance(telegramToken, str) != True:
     telegramToken = 'bot1842158365:AAGWo3CqoVYYTBRN7uETQ8axicrgSF4ipFU'
 
-# install / update cronjob
-# TODO: implement (see https://code.tutsplus.com/tutorials/managing-cron-jobs-using-python--cms-28231)
+# update cronjob
+myCron = CronTab(user=True)
+for job in myCron:
+    if job.comment == 'hardwareCheck' and str(job.minute) != ('*/' + str(checkInterval)):
+        job.minute.every(checkInterval)
 
 # read cpu-temperature
 cpu = Cpu(monitoring_latency=1)

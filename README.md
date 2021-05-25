@@ -4,9 +4,9 @@ Ein Python-Tool zur Überwachung von Hardware auf entfernten Computern (z.B. Ras
 
 ## Voraussetzungen
 
-Python-Module: 
+Python-Module:
 
-* psutil (CPU-Temperatur auf Linux)
+* pyspectator (CPU-Temperatur)
 * pyyaml (für das config-file)
 * python-crontab (für den Cronjob)
 * requests (HTTPS Calls for Telegram API)
