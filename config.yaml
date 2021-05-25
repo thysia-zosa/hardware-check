@@ -6,3 +6,7 @@ maxCpuTemp: 80.0
 checkInterval: 10
 # whom to warn
 telegramAddress: 'M122'
+# Telegram API URL
+https://api.telegram.org/
+# Telegram API Key
+bot1842158365:AAGWo3CqoVYYTBRN7uETQ8axicrgSF4ipFU
