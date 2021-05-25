@@ -5,8 +5,8 @@ maxCpuTemp: 80.0
 # minutes between two checks, must be an integer
 checkInterval: 10
 # whom to warn
-telegramAddress: 'M122'
+telegramChatID: '-559789286'
 # Telegram API URL
-https://api.telegram.org/
+telegramApiUrl: 'https://api.telegram.org/'
 # Telegram API Key
-bot1842158365:AAGWo3CqoVYYTBRN7uETQ8axicrgSF4ipFU
+telegramToken: 'bot1842158365:AAGWo3CqoVYYTBRN7uETQ8axicrgSF4ipFU'
