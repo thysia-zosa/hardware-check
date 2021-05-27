@@ -7,8 +7,10 @@ from datetime import datetime
 import os.path
 import requests
 import yaml
+import json
 from pyspectator.processor import Cpu
 from crontab import CronTab
+import sys
 
 # constants
 CONFIG_FILE = 'config.yaml'
@@ -23,8 +25,9 @@ maxCpuTemp = None
 checkInterval = None
 telegramChatID = None
 telegramToken = None
-log = [datetime.now()]
-errors = []
+time = datetime.now()
+log = {}
+warnings = []
 warningMessage = ''
 
 if os.path.isfile(CONFIG_FILE):
@@ -46,10 +49,9 @@ if maxCpuTemp == None or isinstance(maxCpuTemp, float) != True:
 if checkInterval == None or isinstance(checkInterval, int) != True:
     checkInterval = 10
 # TODO: if one of the folowing is amiss, abort with error message 'ChatID/Token not provided'
-if telegramChatID == None or isinstance(telegramChatID, str) != True:
-    telegramChatID = '-559789286'
-if telegramToken == None or isinstance(telegramToken, str) != True:
-    telegramToken = 'bot1842158365:AAGWo3CqoVYYTBRN7uETQ8axicrgSF4ipFU'
+if telegramChatID == None or isinstance(telegramChatID, str) != True or \
+    telegramToken == None or isinstance(telegramToken, str) != True:
+    sys.exit('telegram config missing')
 
 # update cronjob
 myCron = CronTab(user=True)
@@ -60,18 +62,27 @@ for job in myCron:
 # read cpu-temperature
 cpu = Cpu(monitoring_latency=1)
 temperature = cpu.temperature
-log.append('cpu-temp: ' + temperature)
+log['cpu-temp'] = temperature
 
 # check if cpu-temperature exceeds max
 if temperature > maxCpuTemp:
-    errors.append('Temperature is too high: ' + temperature + ' (max: ' + maxCpuTemp + ')')
+    warnings.append('Temperature is too high: ' + \
+        temperature + ' (max: ' + maxCpuTemp + ')')
 
 # save data to logfile
 # TODO: implement (@Melvin?)
+with open('log.json', 'r+') as logFile:
+    data = json.load(logFile)
+    data.update(log)
+    logFile.seek(0)
+    json.dump(data, logFile, indent=2, ensure_ascii=False)
 
 # write telegram message
-if len(errors) > 0:
-    send_text = 'https://api.telegram.org/' + telegramToken + \
-        '/sendMessage?chat_id=' + telegramChatID + \
-        '&parse_mode=Markdown&text=' + warningMessage
-    response = requests.get(send_text)
+if len(warnings) > 0:
+    warnings.insert(0, 'Your Computer has occurred a problem:')
+    warningMessage = '\n'.join(warnings)
+    # send_text = 'https://api.telegram.org/' + telegramToken + \
+    #     '/sendMessage?chat_id=' + telegramChatID + \
+    #     '&parse_mode=Markdown&text=' + warningMessage
+    # response = requests.get(send_text)
+    sys.exit(warningMessage)
