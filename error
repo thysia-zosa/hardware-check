@@ -1,0 +1,7 @@
+Traceback (most recent call last):
+  File "/home/jst2018/Documents/schoolProjects/hardware-check/hardware-check.py", line 75, in <module>
+    warnings.append('Temperature is too high: ' + \
+TypeError: can only concatenate str (not "int") to str
+Your Computer has occurred a problem:
+Temperature is too high: 42 (max: 30.0)
+<Response [200]>

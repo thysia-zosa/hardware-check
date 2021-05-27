@@ -1,8 +1,9 @@
 #! /usr/bin/env python3
 #
 # Authors: Severin Hasler, Melvin Tas, Jonas Tochtermann
-# ©2021
+# (c) 2021
 
+from pathlib import Path
 from datetime import datetime
 import os.path
 import requests
@@ -25,14 +26,15 @@ maxCpuTemp = None
 checkInterval = None
 telegramChatID = None
 telegramToken = None
-time = datetime.now()
+time = str(datetime.now())
 log = {}
 warnings = []
 warningMessage = ''
+codePath = str(Path(__file__).parent.absolute()) + '/'
 
-if os.path.isfile(CONFIG_FILE):
+if os.path.isfile(codePath + CONFIG_FILE):
     # read config file
-    with open(CONFIG_FILE, 'r') as yamlFile:
+    with open(codePath + CONFIG_FILE, 'r') as yamlFile:
         config = yaml.load(yamlFile, Loader=yaml.CLoader)
     if MAX_CPU_TEMP in config:
         maxCpuTemp = config[MAX_CPU_TEMP]
@@ -42,22 +44,27 @@ if os.path.isfile(CONFIG_FILE):
         telegramChatID = config[TELEGRAM_CHAT]
     if TELEGRAM_TOKEN in config:
         telegramToken = config[TELEGRAM_TOKEN]
+else:
+    sys.exit('config file missing')
 
 # In case something went wrong, assign default values
 if maxCpuTemp == None or isinstance(maxCpuTemp, float) != True:
     maxCpuTemp = 80.0
 if checkInterval == None or isinstance(checkInterval, int) != True:
     checkInterval = 10
-# TODO: if one of the folowing is amiss, abort with error message 'ChatID/Token not provided'
+
+# In case something telegrammy is missing, abort: Programm is not runnable
 if telegramChatID == None or isinstance(telegramChatID, str) != True or \
     telegramToken == None or isinstance(telegramToken, str) != True:
-    sys.exit('telegram config missing')
+        sys.exit('telegram config missing')
 
-# update cronjob
+# update cronjob, if the user has changed interval time
 myCron = CronTab(user=True)
+intTime = '*/' + str(checkInterval)
 for job in myCron:
-    if job.comment == 'hardwareCheck' and str(job.minute) != ('*/' + str(checkInterval)):
+    if job.comment == 'hardwareCheck' and str(job.minute) != intTime:
         job.minute.every(checkInterval)
+        myCron.write()
 
 # read cpu-temperature
 cpu = Cpu(monitoring_latency=1)
@@ -67,13 +74,13 @@ log['cpu-temp'] = temperature
 # check if cpu-temperature exceeds max
 if temperature > maxCpuTemp:
     warnings.append('Temperature is too high: ' + \
-        temperature + ' (max: ' + maxCpuTemp + ')')
+        str(temperature) + ' (max: ' + str(maxCpuTemp) + ')')
 
 # save data to logfile
-# TODO: implement (@Melvin?)
-with open('log.json', 'r+') as logFile:
+# TODO: add error handling
+with open(codePath + 'log.json', 'r+') as logFile:
     data = json.load(logFile)
-    data.update(log)
+    data.update({time: log})
     logFile.seek(0)
     json.dump(data, logFile, indent=2, ensure_ascii=False)
 
@@ -81,8 +88,8 @@ with open('log.json', 'r+') as logFile:
 if len(warnings) > 0:
     warnings.insert(0, 'Your Computer has occurred a problem:')
     warningMessage = '\n'.join(warnings)
-    # send_text = 'https://api.telegram.org/' + telegramToken + \
-    #     '/sendMessage?chat_id=' + telegramChatID + \
-    #     '&parse_mode=Markdown&text=' + warningMessage
-    # response = requests.get(send_text)
-    sys.exit(warningMessage)
+    send_text = 'https://api.telegram.org/' + telegramToken + \
+        '/sendMessage?chat_id=' + telegramChatID + \
+        '&parse_mode=Markdown&text=' + warningMessage
+    response = requests.get(send_text)
+    # TODO: Is there something to do with the response?

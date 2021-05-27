@@ -3,7 +3,7 @@
 # max CPU-temperature in ° Celsius, must be a floating point number
 maxCpuTemp: 80.0
 # minutes between two checks, must be an integer
-checkInterval: 4
+checkInterval: 10
 # whom to warn
 telegramChatID: '-559789286'
 # Telegram API URL
