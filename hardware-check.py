@@ -34,16 +34,19 @@ codePath = str(Path(__file__).parent.absolute()) + '/'
 
 if os.path.isfile(codePath + CONFIG_FILE):
     # read config file
-    with open(codePath + CONFIG_FILE, 'r') as yamlFile:
-        config = yaml.load(yamlFile, Loader=yaml.CLoader)
-    if MAX_CPU_TEMP in config:
-        maxCpuTemp = config[MAX_CPU_TEMP]
-    if CHECK_INTERVAL in config:
-        checkInterval = config[CHECK_INTERVAL]
-    if TELEGRAM_CHAT in config:
-        telegramChatID = config[TELEGRAM_CHAT]
-    if TELEGRAM_TOKEN in config:
-        telegramToken = config[TELEGRAM_TOKEN]
+    try:
+        with open(codePath + CONFIG_FILE, 'r') as yamlFile:
+            config = yaml.load(yamlFile, Loader=yaml.CLoader)
+        if MAX_CPU_TEMP in config:
+            maxCpuTemp = config[MAX_CPU_TEMP]
+        if CHECK_INTERVAL in config:
+            checkInterval = config[CHECK_INTERVAL]
+        if TELEGRAM_CHAT in config:
+            telegramChatID = config[TELEGRAM_CHAT]
+        if TELEGRAM_TOKEN in config:
+            telegramToken = config[TELEGRAM_TOKEN]
+    except BaseException as err:
+        print('Error:', err)
 else:
     sys.exit('config file missing')
 
@@ -77,12 +80,14 @@ if temperature > maxCpuTemp:
         str(temperature) + ' (max: ' + str(maxCpuTemp) + ')')
 
 # save data to logfile
-# TODO: add error handling
-with open(codePath + 'log.json', 'r+') as logFile:
-    data = json.load(logFile)
-    data.update({time: log})
-    logFile.seek(0)
-    json.dump(data, logFile, indent=2, ensure_ascii=False)
+try:
+    with open(codePath + 'log.json', 'r+') as logFile:
+        data = json.load(logFile)
+        data.update({time: log})
+        logFile.seek(0)
+        json.dump(data, logFile, indent=2, ensure_ascii=False)
+except BaseException as err:
+    print('Error:', err)
 
 # write telegram message
 if len(warnings) > 0:
@@ -91,5 +96,7 @@ if len(warnings) > 0:
     send_text = 'https://api.telegram.org/' + telegramToken + \
         '/sendMessage?chat_id=' + telegramChatID + \
         '&parse_mode=Markdown&text=' + warningMessage
-    response = requests.get(send_text)
-    # TODO: Is there something to do with the response?
+    try:
+        response = requests.get(send_text)
+    except requests.exceptions as err:
+        print('Error:', err)
