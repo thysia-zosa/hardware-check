@@ -8,7 +8,7 @@ Bislang funktioniert es leider nur auf Linux-PCs.
 Folgende zusätzlichen Python-Module müssen installiert werden (mit `pip3 install ...`):
 
 * pyspectator (CPU-Temperatur)
-* pyyaml (für das config-file)
+* PyYAML (für das config-file)
 * python-crontab (für den Cronjob)
 * requests (HTTPS Calls for Telegram API)
 

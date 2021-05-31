@@ -11,5 +11,5 @@ setup(
    author='Jonas Tochtermann, Melvin Tas, Severin Hasler',
    author_email='jonas.tochtermann@edu.tbz.ch',
    packages=['hardware-check'],  #internal packages | same as name
-   install_requires=['python-crontab', 'pyyaml', 'pyspectator', 'requests'], #external packages as dependencies
+   install_requires=['python-crontab', 'PyYAML', 'pyspectator', 'requests'], #external packages as dependencies
 )
